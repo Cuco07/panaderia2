@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class cliente extends Model
+{
+    use HadFactory;
+
+    public function persona(){
+        return $this->belongsTo(persona::class);
+    }
+}
