@@ -8,18 +8,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('presentaciones', function (Blueprint $table) {
+        Schema::create('productos', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('producto_id')
+            $table->string('nombre', 100);
+            $table->string('descripcion', 255)->nullable();
+
+            $table->foreignId('marca_id')
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->string('nombre', 100);
-            $table->integer('cantidad')->nullable();
-            $table->string('unidad', 20)->nullable(); // g, kg, ml, L, und
-
-            $table->decimal('precio', 10, 2);
             $table->boolean('estado');
 
             $table->timestamps();
@@ -28,7 +26,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('presentaciones');
+        Schema::dropIfExists('productos');
     }
 };
-

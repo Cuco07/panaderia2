@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('marcas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('caracteristica_id')->iunique()->constrained('caracteristicas')->onDelete('cascade');
+            $table->string('nombre', 60)->unique();
+            $table->string('descripcion', 255)->nullable();
+            $table->boolean('estado');
             $table->timestamps();
         });
     }

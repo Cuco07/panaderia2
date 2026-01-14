@@ -2,27 +2,24 @@
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Presentacion extends Model
 {
-use HasFactory; 
-
-
-    protected $table = 'presentaciones';
+    use HasFactory;
 
     protected $fillable = [
-        'caracteristica_id'
+        'producto_id',
+        'nombre',
+        'cantidad',
+        'unidad',
+        'precio',
+        'estado',
     ];
 
-
- public function productos(){
-        return $this->belongsToMany(producto::class);
-    } 
-
-    public function caracteristica(){
-        return $this->belongsTo(caracteristica::class);
-    } 
+    public function producto()
+    {
+        return $this->belongsTo(Producto::class);
+    }
 }

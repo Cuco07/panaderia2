@@ -33,26 +33,14 @@ class MarcaController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(StoreMarcaRequest $request)
-    {
-         try {
-    DB::beginTransaction();
+{
+    Marca::create($request->validated());
 
-    $caracteristica = Caracteristica::create($request->validated());
-
-    $caracteristica->marca()->create([
-        'caracteristica_id' => $caracteristica->id
-    ]);
-
-    DB::commit();
-} catch (Exception $e) {
-    DB::rollBack();
-    throw $e;
+    return redirect()
+        ->route('marcas.index')
+        ->with('success', 'Marca creada correctamente');
 }
 
-return redirect()
-    ->route('marcas.index')
-    ->with('success', 'Marca registrada');
-    }
 
     /**
      * Display the specified resource.
@@ -74,35 +62,27 @@ return redirect()
      * Update the specified resource in storage.
      */
     public function update(UpdateMarcaRequest $request, Marca $marca)
-    {
-         Caracteristica::where('id',$marca->caracteristica->id)
-        ->update($request->validated());
+{
+    $marca->update($request->validated());
 
-        return redirect()->route('marcas.index')->with('success','Marca editada');
-    }
+    return redirect()
+        ->route('marcas.index')
+        ->with('success', 'Marca actualizada');
+}
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        $message ='';
-        $marca = Marca::find($id);
-        if($marca->caracteristica->estado == 1){
-         Caracteristica::where('id',$marca->caracteristica->id)
-        ->update([
-            'estado' => 0
-        ]); 
-        $message = 'Categoria Eliminada'; 
-        }else{
-           Caracteristica::where('id',$marca->caracteristica->id)
-        ->update([
-            'estado' => 1
-        ]);  
-         $message = 'Marca Restaurada'; 
-        }
-        
+    public function destroy(Marca $marca)
+{
+    $marca->update([
+        'estado' => ! $marca->estado
+    ]);
 
-        return redirect()->route('marcas.index')->with('success', $message);
-    }
+    return redirect()
+        ->route('marcas.index')
+        ->with('success', 'Estado de la marca actualizado');
+}
+
 }

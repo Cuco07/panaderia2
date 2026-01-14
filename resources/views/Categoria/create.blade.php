@@ -4,9 +4,9 @@
 
 @push('css')
 <style>
- #descripcion{
-    resize: none;
- }   
+    #descripcion {
+        resize: none;
+    }
 </style>
 @endpush
 
@@ -32,31 +32,38 @@
 
                 <div class="col-md-6">
                     <label for="nombre" class="form-label">Nombre</label>
-                    <input 
-                        type="text" 
-                        name="nombre" 
-                        id="nombre" 
-                        class="form-control" 
-                        value="{{ old('nombre') }}"
-                    >
+                    <input
+                        type="text"
+                        name="nombre"
+                        id="nombre"
+                        class="form-control"
+                        value="{{ old('nombre') }}">
                     @error('nombre')
-                        <small class="text-danger">{{ '* '.$message }}</small>
+                    <small class="text-danger">{{ '* '.$message }}</small>
                     @enderror
                 </div>
 
                 <div class="col-md-12">
                     <label for="descripcion" class="form-label">Descripción</label>
-                    <textarea 
-                        name="descripcion" 
-                        id="descripcion" 
-                        rows="3" 
-                        class="form-control"
-                    >{{ old('descripcion') }}</textarea>
+                    <textarea
+                        name="descripcion"
+                        id="descripcion"
+                        rows="3"
+                        class="form-control">{{ old('descripcion') }}</textarea>
 
                     @error('descripcion')
-                        <small class="text-danger">{{ '* '.$message }}</small>
+                    <small class="text-danger">{{ '* '.$message }}</small>
                     @enderror
                 </div>
+                <div class="col-md-6">
+                    <label class="form-label">Estado</label>
+                    <select name="estado" class="form-control">
+                        <option value="1" {{ old('estado') == '1' ? 'selected' : '' }}>Activo</option>
+                        <option value="0" {{ old('estado') == '0' ? 'selected' : '' }}>Inactivo</option>
+                    </select>
+
+                </div>
+
 
                 <div class="col-12 text-center">
                     <button type="submit" class="btn btn-primary">

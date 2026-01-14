@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('categorias', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('caracteristica_id')->unique()->constrained('caracteristicas')->onDelete('cascade');
+            $table->string('nombre', 60);
+            $table->string('descripcion', 255)->nullable();
+            $table->boolean('estado');
             $table->timestamps();
         });
     }
