@@ -10,7 +10,6 @@ Route::get('/', function () {
     return view('template');
 });
 
-
 Route::view('/panel', 'panel.index')->name('panel');
 
 Route::resource('categorias', CategoriaController::class);

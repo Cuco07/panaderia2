@@ -8,12 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-       Schema::create('categorias_producto', function (Blueprint $table) {
-             $table->id();
-             $table->foreignId('producto_id')->constrained('productos')->onDelete('cascade');
-             $table->foreignId('categoria_id')->constrained('categorias')->onDelete('cascade');
-             $table->timestamps();
-});
+        Schema::create('categorias_producto', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('producto_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('categoria_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->unique(['producto_id', 'categoria_id']);
+        });
     }
 
     public function down(): void
@@ -21,4 +28,3 @@ return new class extends Migration
         Schema::dropIfExists('categorias_producto');
     }
 };
-

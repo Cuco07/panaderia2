@@ -9,21 +9,15 @@ class Categoria extends Model
 {
     use HasFactory;
 
-    public function productos(){
-        return $this->belongsToMany(
-        Producto::class,
-        'categorias_producto',   
-        'categoria_id',          
-        'producto_id'            
-    );
-    }
+    protected $fillable = [
+        'nombre',
+        'descripcion',
+        'estado',
+    ];
 
-    public function caracteristica(){
-        return $this->belongsTo(Caracteristica::class);
+    public function productos()
+    {
+        return $this->belongsToMany(Producto::class, 'categorias_producto');
     }
-
-    protected $fillable = ['caracteristica_id',
-    'estado'];
 }
-
 

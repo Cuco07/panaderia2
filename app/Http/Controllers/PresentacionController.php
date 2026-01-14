@@ -2,85 +2,92 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePresentacionRequest;
-use App\Http\Requests\UpdatePresentacionRequest;
 use App\Models\Presentacion;
-use App\Models\Caracteristica;
+use App\Models\Producto;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Exception;
 
 class PresentacionController extends Controller
 {
-    public function index()
+    /**
+     * Mostrar las presentaciones de un producto
+     */
+    public function index(Producto $producto)
     {
-        $presentaciones = Presentacion::with('caracteristica')->latest()->get();
-        return view('presentacion.index', compact('presentaciones'));
+        $presentaciones = $producto->presentaciones()->latest()->get();
+
+        return view('presentacion.index', compact('producto', 'presentaciones'));
     }
 
-    public function create()
+    /**
+     * Mostrar formulario de creación
+     */
+    public function create(Producto $producto)
     {
-        return view('presentacion.create');
+        return view('presentacion.create', compact('producto'));
     }
 
-    public function store(StorePresentacionRequest $request)
+    /**
+     * Guardar una nueva presentación
+     */
+    public function store(Request $request, Producto $producto)
     {
-        try {
-            DB::beginTransaction();
+        $validated = $request->validate([
+            'nombre'    => 'required|string|max:100',
+            'cantidad'  => 'nullable|integer|min:1',
+            'unidad'    => 'nullable|string|max:20',
+            'precio'    => 'required|numeric|min:0',
+            'estado'    => 'required|boolean',
+        ]);
 
-            $caracteristica = Caracteristica::create([
-                'nombre' => $request->nombre,
-                'descripcion' => $request->descripcion,
-                'estado' => 1
-            ]);
-
-            Presentacion::create([
-                'caracteristica_id' => $caracteristica->id
-            ]);
-
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-        }
+        DB::transaction(function () use ($validated, $producto) {
+            $producto->presentaciones()->create($validated);
+        });
 
         return redirect()
-            ->route('presentaciones.index')
-            ->with('success', 'Presentación registrada');
+            ->route('productos.presentaciones.index', $producto)
+            ->with('success', 'Presentación creada correctamente');
     }
 
+    /**
+     * Mostrar formulario de edición
+     */
     public function edit(Presentacion $presentacion)
     {
         return view('presentacion.edit', compact('presentacion'));
     }
 
-    public function update(UpdatePresentacionRequest $request, Presentacion $presentacion)
+    /**
+     * Actualizar una presentación
+     */
+    public function update(Request $request, Presentacion $presentacion)
     {
-        Caracteristica::where('id', $presentacion->caracteristica->id)
-            ->update($request->validated());
+        $validated = $request->validate([
+            'nombre'    => 'required|string|max:100',
+            'cantidad'  => 'nullable|integer|min:1',
+            'unidad'    => 'nullable|string|max:20',
+            'precio'    => 'required|numeric|min:0',
+            'estado'    => 'required|boolean',
+        ]);
+
+        $presentacion->update($validated);
 
         return redirect()
-            ->route('presentaciones.index')
-            ->with('success', 'Presentación actualizada');
+            ->route('productos.presentaciones.index', $presentacion->producto)
+            ->with('success', 'Presentación actualizada correctamente');
     }
 
-    public function destroy(string $id)
+    /**
+     * Activar / Desactivar presentación
+     */
+    public function destroy(Presentacion $presentacion)
     {
-        $message ='';
-        $presentacion = Presentacion::find($id);
-        if($presentacion->caracteristica->estado == 1){
-         Caracteristica::where('id',$presentacion->caracteristica->id)
-        ->update([
-            'estado' => 0
-        ]); 
-        $message = 'Presentacion Eliminada'; 
-        }else{
-           Caracteristica::where('id',$presentacion->caracteristica->id)
-        ->update([
-            'estado' => 1
-        ]);  
-         $message = 'Presentacion Restaurada'; 
-        }
-        
+        $presentacion->update([
+            'estado' => ! $presentacion->estado
+        ]);
 
-        return redirect()->route('presentaciones.index')->with('success', $message);
+        return redirect()
+            ->route('productos.presentaciones.index', $presentacion->producto)
+            ->with('success', 'Estado de la presentación actualizado');
     }
 }
